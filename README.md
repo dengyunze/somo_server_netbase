@@ -1,12 +1,12 @@
 # somo_server_netbase
-# C++ warpper server side network library based on libuv for easy usage. Including following components:
+# C++ wrapper on libuv for easy usage, including following components:
 
-1. tcp server based on epoll;
-2. udp server based on epoll;
-3. tcp client based on epoll;
-4. udp client based on epoll;
-5. multiple components in same process, like a process support both tcp-server on port 8000, udp server on port 8001, and tcp link connect to another tcp server.
-
+1. tcp+udp server based on epoll;
+2. tcp+udp client based on epoll;
+3. multiple components in same thread, like a process support both tcp-server on port 8000, udp server on port 8001, and tcp link connect to another tcp server.
+4, timers on epoll;
+5. internal keep alive check;
+6, single thread model only, no multi-threads components;
 
 # Scenario:
 1. create an udp server:
@@ -52,5 +52,5 @@
       }
       
  # Benchmark
- I will add this soon later.
+soon later!
  
