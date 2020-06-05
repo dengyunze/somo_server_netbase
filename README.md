@@ -7,6 +7,8 @@
 4. timers on epoll;
 5. internal keep alive check;
 6. single thread model only, no multi-threads components;
+7. memory pool for quick network packet copy；
+8. multi-read and multi-write for performance [TODO];
 
 ## How to use
 1. call SNStartup to init the environment, include socket limit and ignore signals;
