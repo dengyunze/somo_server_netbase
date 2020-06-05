@@ -6,30 +6,30 @@
 #include "timer.h"
 #include "ioengine.h"
 
-ISNTcpServer* SNLinkFactory::createTcpServer() {
+ISNTcpServer* SNFactory::createTcpServer() {
     return new TcpServer();
 }
 
 
-ISNUdpServer* SNLinkFactory::createUdpServer() {
+ISNUdpServer* SNFactory::createUdpServer() {
     return new UdpServer();
 }
 
-ISNTcpLink*   SNLinkFactory::createTcpLink() {
+ISNTcpLink*   SNFactory::createTcpLink() {
     return new TcpLink();
 }
 
-ISNUdpLink*   SNLinkFactory::createUdpLink() {
+ISNUdpLink*   SNFactory::createUdpLink() {
     return new UdpLink();
 }
 
-ISNTimer*     SNLinkFactory::createTimer() {
+ISNTimer*     SNFactory::createTimer() {
     return new Timer();
 }
 
 static IOEngine* s_engine = NULL;
 static bool s_engine_inited = false;
-void ISNStartup() {
+void SNStartup() {
     if( !s_engine ) {
         s_engine = new IOEngine();
     }
@@ -40,7 +40,7 @@ void ISNStartup() {
     }
 }
 
-void ISNLoop() {
+void SNLoop() {
     if( !s_engine || !s_engine_inited ) {
         return;
     }

@@ -18,7 +18,7 @@ else
 endif
 
 all:$(TARGET)
-OBJECTS = $(patsubst %.cpp, %.o, $(wildcard *.cpp))
+OBJECTS = $(patsubst src/%.cpp, build/%.o, $(wildcard src/*.cpp))
 
 %.o : %.cpp %.h
 	$(CC) -c $(FLAG) $< -o $@ $(INC)

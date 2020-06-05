@@ -11,6 +11,11 @@ struct ISNTcpLink;
 struct ISNUdpServer;
 struct ISNUdpLink;
 
+/**
+ * link base class, it's usually a client link or server link object that mapped to a client link.
+ *
+ * ISNTcpLink, ISNUdpLink and ISNUdpPeerLink inherit from ISNLink.
+ */
 struct ISNLink {
     virtual ~ISNLink() {}
     virtual void    set_handler(ISNLinkHandler* handler) = 0;
@@ -23,6 +28,12 @@ struct ISNLink {
     virtual uint16_t port() = 0;
 };
 
+/**
+ * server base class.
+
+ * ISNUdpServer and ISNTcpServer inhereit from this.
+ *
+ */
 struct ISNServer {
 public:
     virtual ~ISNServer() {}
@@ -31,6 +42,11 @@ public:
     virtual int     close() = 0;
 };
 
+/**
+ * link handler interface, callback to app when data come, link connected or link closed.
+ *
+ * Both server&client use this link handler to handle link events.
+ */
 struct ISNLinkHandler
 {
     virtual ~ISNLinkHandler() {}
@@ -42,9 +58,6 @@ struct ISNLinkHandler
 struct ISNTcpServer : public ISNServer {
 public:
     virtual ~ISNTcpServer() {}
-    virtual void    set_handler(ISNLinkHandler* handler) = 0;
-    virtual int     listen(uint16_t base_port) = 0;
-    virtual int     close() = 0;
     virtual uint16_t port() = 0;
     virtual ISNTcpLink* get_link(uint32_t id) = 0;
 };
@@ -53,12 +66,10 @@ struct ISNTcpLink : public ISNLink
 {
 public:
     virtual bool    is_connected() = 0;
-
 };
 
 struct ISNUdpServer : public ISNServer {
 public:
-    virtual ~ISNUdpServer() {}
     virtual void    answer(const char* data, int len, uint32_t ip, short port) = 0;
 };
 
@@ -80,6 +91,9 @@ struct ISNTimerHandler {
     virtual void    on_timer(int id) = 0;
 };
 
+/**
+ * timer object, runs in epoll loop.
+ */
 class ISNTimer {
 public:
     virtual ~ISNTimer() {}
@@ -90,8 +104,10 @@ public:
     virtual void    close() = 0;
 };
 
-
-class SNLinkFactory {
+/**
+ * somo net factory object
+ */
+class SNFactory {
 public:
     static ISNTcpServer* createTcpServer();
     static ISNUdpServer* createUdpServer();
@@ -100,5 +116,12 @@ public:
     static ISNTimer*     createTimer();
 };
 
-void ISNStartup();
-void ISNLoop();
+/**
+ * somo net enronment prepare! call this before everything happens.
+ */
+void SNStartup();
+
+/**
+ * somo net loop start!
+ */
+void SNLoop();
