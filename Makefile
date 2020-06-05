@@ -3,9 +3,10 @@
 # STATIC---.a   DYNAMIC---.so
 ########################################################################
 CC = g++
-INC = -I ./ -I../../lib3rd/libuv/include -I ../base/include -I ../protocol -I ../syscomm -I ../../lib3rd/jsoncpp/include -I ../../lib3rd/libevent/include
-LIB = ../../lib3rd/jsoncpp/lib/libjsoncpp.a
+INC = -I ./ -I include -I 3rd/libuv/include
+LIB = 
 FLAG_SUFFIX = -std=c++0x -Wall -O2 -Wno-deprecated
+MODE = SYNAMIC
 
 ifeq ($(MODE),DYNAMIC)
 	TARGET = libnetbase.so
@@ -17,10 +18,14 @@ else
 	FLAG = $(FLAG_SUFFIX)
 endif
 
-all:$(TARGET)
-OBJECTS = $(patsubst src/%.cpp, build/%.o, $(wildcard src/*.cpp))
+SOURCES=$(wildcard ./src/*.cpp)
+DIR=$(notdir $(SOURCES))
+OBJECTS=$(patsubst %.cpp,%.o,$(DIR) )
 
-%.o : %.cpp %.h
+all:$(TARGET)
+#OBJECTS = $(patsubst src/%.cpp, build/%.o, $(wildcard src/*.cpp))
+
+%.o : src/%.cpp src/%.h
 	$(CC) -c $(FLAG) $< -o $@ $(INC)
 
 $(TARGET) : $(OBJECTS)

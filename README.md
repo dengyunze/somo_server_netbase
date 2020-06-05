@@ -56,6 +56,9 @@
 
           return 0;
       }
+
+# packet format
+LinkHandlerBase suppose the network packet start with len (4 bytes). 
       
  # Benchmark
 soon later!
