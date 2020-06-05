@@ -9,6 +9,9 @@
 6. single thread model only, no multi-threads components;
 7. memory pool for quick network packet copy；
 8. multi-read and multi-write for performance [TODO];
+9. reliable udp (ARQ);
+10. bandwidth check;
+11. network transfer stats;
 
 ## How to use
 1. call SNStartup to init the environment, include socket limit and ignore signals;
