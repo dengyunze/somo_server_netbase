@@ -30,10 +30,10 @@ private:
     static void    on_accept(uv_stream_s* server, int status);
     
 private:
-    ISNLinkHandler*m_pHander;
     uv_tcp_s*   m_pTcp;
     uint16_t    m_nPort;
     bool        m_bListen;
+    ISNLinkHandler*m_pHander;
     uint64_t    m_nClients;
     std::map<uint32_t, TcpLink*>    m_mapLinks;
 };

@@ -2,6 +2,7 @@
 #include "isnet.h"
 #include "tcpserver.h"
 #include "udpserver.h"
+#include "httpserver.h"
 #include "tcplink.h"
 #include "udplink.h"
 #include "timer.h"
@@ -14,6 +15,10 @@ ISNTcpServer* SNFactory::createTcpServer() {
 
 ISNUdpServer* SNFactory::createUdpServer() {
     return new UdpServer();
+}
+
+ISNHttpServer* SNFactory::createHttpServer() {
+    return new HttpServer();
 }
 
 ISNTcpLink*   SNFactory::createTcpLink() {

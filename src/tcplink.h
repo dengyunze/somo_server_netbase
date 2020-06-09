@@ -30,6 +30,7 @@ public:
     virtual int     close();
     virtual bool    is_tcp() { return true; }
     virtual bool    is_connected() { return m_bConnected; }
+    virtual uint32_t linkid() { return m_nId; }
     virtual std::string ip_str() { return m_strIP; }
     virtual uint32_t ip() { return m_nIP; }
     virtual uint16_t port() { return m_bPort; }
@@ -37,6 +38,10 @@ public:
 public:
     uint32_t        id() { return m_nId; }
     ISNLinkHandler* link_handler() { return m_pHandler; }
+
+private:
+    void    addData(const char* data, int len);
+    void    removeData(int len);
 
 private:
     static void    on_connect(uv_connect_s* req, int status);
@@ -59,12 +64,19 @@ private:
     //status
     bool        m_bConnected;
     bool        m_bConnecting;
-   
+
+    //read buffer:
+    char*       m_pBuffer;
+    int         m_nPos;
+    int         m_nLen;
+    int         m_nCapacity;
 
     //stats:
     uint32_t    m_nReconnects;
     uint32_t    m_nReconnectErrors;
     uint32_t    m_nSendErrors;
     uint32_t    m_nReads;
+
+    static char* s_pStaticBuf;
 };
 

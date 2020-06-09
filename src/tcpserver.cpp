@@ -4,11 +4,8 @@
 
 #include "uv.h"
 #include "env.h"
-//#include "comm.h"
 #include "logger.h"
 #include "ioengine.h"
-//#include "packbuf.h"
-//#include "uni.h"
 
 #include <netinet/tcp.h>
 #include <sys/socket.h>
@@ -104,6 +101,11 @@ void TcpServer::on_accept(uv_stream_t* server, int status) {
 
         //add toe tcp server link map:
         tcp->m_mapLinks[link->id()] = link;
+
+        //callback:
+        if( tcp->m_pHander != NULL ) {
+            tcp->m_pHander->on_connected(link);
+        }
     } else {
         uv_close((uv_handle_t*)client, NULL);
     }

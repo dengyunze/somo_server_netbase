@@ -1,4 +1,5 @@
 #include "udplink.h"
+#include "linkidallocator.h"
 #include "mempool.h"
 #include "memitem.h"
 
@@ -23,15 +24,12 @@ UdpLink::UdpLink()
 , m_nSends(0)
 , m_nReads(0)
 {
-    
+    m_nId = LinkidAllocator::next();
 }
 
 UdpLink::~UdpLink()
 {
-    if( m_pUdp ) {
-        uv_close((uv_handle_t*)m_pUdp, NULL);
-        m_pUdp = NULL;
-    }
+    close();
 }
 
 void    UdpLink::set_handler(ISNLinkHandler* handler) {
@@ -100,7 +98,7 @@ int UdpLink::send(const char* data, size_t len, uint32_t ip, uint16_t port) {
     }
 
     m_nSends++;
-    if( m_nSends%1000 == 0 || m_nSends<=300 ) {
+    if( m_nSends%10000 == 0 || m_nSends<=300 ) {
         FUNLOG(Info, "udp link send, len=%d, sends=%llu", len, m_nSends);
     }
 
@@ -126,6 +124,9 @@ int UdpLink::send(const char* data, size_t len, uint32_t ip, uint16_t port) {
 
 int UdpLink::close()
 {
+    if( m_pHandler ) {
+        m_pHandler->on_close(this);
+    }
     if( m_pUdp ) {
         uv_close((uv_handle_t*)m_pUdp, NULL);
         m_pUdp = NULL;
@@ -156,7 +157,7 @@ void    UdpLink::on_send(uv_udp_send_t* req, int status) {
         FUNLOG(Error, "udp link send failed!!! status=%d", status);
     }
 
-    //free(req->bufs);
+    free(req);
 }
 
 void    UdpLink::on_read(uv_udp_s* handle, ssize_t nread, const uv_buf_t* buf, const struct sockaddr* addr, unsigned flags) {
@@ -168,7 +169,7 @@ void    UdpLink::on_read(uv_udp_s* handle, ssize_t nread, const uv_buf_t* buf, c
 
     if( nread > 0 ) {
         link->m_nReads++;
-        if( link->m_nReads%1000 == 0 || link->m_nReads<= 5 ) {
+        if( link->m_nReads%10000 == 0 || link->m_nReads<= 5 ) {
             FUNLOG(Info, "udp link read, len=%d, count=%u", nread, link->m_nReads);
         }
 

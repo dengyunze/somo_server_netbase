@@ -1,6 +1,7 @@
 #include "tcplink.h"
 #include "mempool.h"
 #include "memitem.h"
+#include "linkidallocator.h"
 
 #include "uv.h"
 #include "env.h"
@@ -9,6 +10,7 @@
 #include "timeutil.h"
 #include "netaddr.h"
 
+#include <string.h>
 #include <netinet/tcp.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -16,7 +18,10 @@
 
 #define __CLASS__ "TcpLink"
 
-static uint32_t s_nLastLinkId = 1;
+char*   TcpLink::s_pStaticBuf = NULL;
+
+#define TCP_LINK_BUFFER_DEFAULT     1024*256
+#define TCP_LINK_BUFFER_MAX         1024*1024
 
 struct SendData {
     MemItem* mem;
@@ -33,7 +38,12 @@ TcpLink::TcpLink()
 , m_nReads(0)
 , m_nSendErrors(0)
 {
-    m_nId = s_nLastLinkId++;
+    m_nCapacity = TCP_LINK_BUFFER_DEFAULT;
+    m_pBuffer = new char[m_nCapacity];
+    m_nPos = 0;
+    m_nLen = 0;
+
+    m_nId = LinkidAllocator::next();
     m_pTimer = (uv_timer_t*)malloc(sizeof(uv_timer_t));
     m_pTimer->data = this;
     uv_timer_init(uv_default_loop(), m_pTimer);
@@ -47,7 +57,12 @@ TcpLink::TcpLink(uv_tcp_s* tcp)
 , m_pHandler(NULL)
 , m_nReconnects(0)
 {
-    m_nId = s_nLastLinkId++;
+    m_nCapacity = TCP_LINK_BUFFER_DEFAULT;
+    m_pBuffer = new char[m_nCapacity];
+    m_nPos = 0;
+    m_nLen = 0;
+
+    m_nId = LinkidAllocator::next();
     m_pTimer = (uv_timer_t*)malloc(sizeof(uv_timer_t));
     m_pTimer->data = this;
     uv_timer_init(uv_default_loop(), m_pTimer);
@@ -66,6 +81,10 @@ TcpLink::~TcpLink()
     if( m_pTcp != NULL && !uv_is_closing((uv_handle_t*)m_pTcp) ) {
         uv_close((uv_handle_t*)m_pTcp, NULL);
         m_pTcp = NULL;
+    }
+
+    if( m_pBuffer ) {
+        delete m_pBuffer;
     }
 }
 
@@ -143,6 +162,9 @@ int TcpLink::send(const char* data, size_t len) {
 }
 
 int TcpLink::close() {
+    if( m_pHandler ) {
+        m_pHandler->on_close(this);
+    }
     m_bConnected = false;
 
     if( m_pTcp != NULL ) {
@@ -153,6 +175,39 @@ int TcpLink::close() {
         uv_timer_stop(m_pTimer);
     }
     return 0;
+}
+
+void TcpLink::addData(const char* data, int len) {
+    if( m_nPos + m_nLen + len >= m_nCapacity ) {
+        if( m_nCapacity >= TCP_LINK_BUFFER_MAX ) {
+            FUNLOG(Error, "tcp link add data failed! capacity too large, capacity=%d", m_nCapacity);
+            m_nLen = 0;
+            m_nPos = 0;
+            return;
+        } else {
+            m_nCapacity = m_nPos + m_nLen + len;
+            char* new_buf = new char[m_nCapacity];
+            memcpy(new_buf, m_pBuffer+m_nPos, m_nLen);
+            m_nPos = 0;
+
+            delete m_pBuffer;
+            m_pBuffer = new_buf;
+        }
+    }
+
+    memcpy(m_pBuffer+m_nPos + m_nLen, data, len);
+    m_nLen += len;
+}
+
+void TcpLink::removeData(int len) {
+    m_nPos += len;
+    m_nLen -= len;
+
+    if( m_nPos >= m_nLen ) {
+        //time to shrink:
+        memcpy(m_pBuffer, m_pBuffer+m_nPos, m_nLen);
+        m_nPos = 0;
+    }
 }
 
 void TcpLink::on_connect(uv_connect_t* req, int status) {
@@ -189,8 +244,14 @@ void TcpLink::on_connect(uv_connect_t* req, int status) {
 
 
 void TcpLink::on_alloc(uv_handle_t* handle, size_t suggested_size, uv_buf_t* buf) {
-    buf->base = (char*) malloc(suggested_size);
-    buf->len = suggested_size;
+    //buf->base = (char*) malloc(suggested_size);
+    //buf->len = suggested_size;
+
+    if( s_pStaticBuf == NULL ) {
+        s_pStaticBuf = (char*)malloc(64*1024);
+    }
+    buf->base = s_pStaticBuf;
+    buf->len = 64*1024;
 }
 
 void TcpLink::on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
@@ -201,17 +262,22 @@ void TcpLink::on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
         return;
     }
     link->m_nReads++;
-    if( link->m_nReads%1000 == 0 ) {
+    if( link->m_nReads%10000 == 0 ) {
         FUNLOG(Info, "tcp link read, id=%d, len=%d, count=%u", link->m_nId, nread, link->m_nReads);
     }
 
     if (nread > 0) {
+        link->addData(buf->base, nread);
+
         if( link->m_pHandler != NULL ) {
-            link->m_pHandler->on_data(buf->base, nread, link);
+            int handled_len = link->m_pHandler->on_data(link->m_pBuffer, link->m_nLen, link);
+            if( handled_len >0 ) {
+                link->removeData(handled_len);
+            }
         }
 
         //who free the buf?
-        free(buf->base);
+        //free(buf->base);
 
         return;
      }
@@ -220,7 +286,7 @@ void TcpLink::on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
         link->close();
 
         //free buf:
-        free(buf->base);
+        //free(buf->base);
 
         //start the reconnect timer:
         if( !link->m_bPeerLink ) {
@@ -261,7 +327,7 @@ void TcpLink::on_write(uv_write_t* req, int status) {
     }
 
     delete data;
-    free(req->bufs);
+    free(req);
 }
 
 void TcpLink::on_timer(uv_timer_t* handle) {

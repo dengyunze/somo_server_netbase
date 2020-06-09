@@ -1,7 +1,6 @@
 #pragma once
 
 #include "isnet.h"
-
 #include <string>
 #include <stdint.h>
 #include <sys/socket.h>
@@ -27,6 +26,7 @@ public:
     virtual int     send(const char* data, size_t len, uint32_t ip, uint16_t port);
     virtual int     close();
     virtual bool    is_tcp() { return false; }
+    virtual uint32_t linkid() { return m_nId; }
     virtual std::string ip_str() { return m_strIP; }
     virtual uint32_t ip() { return m_nIP; }
     virtual uint16_t port() { return m_bPort; }
@@ -38,6 +38,7 @@ private:
 
 private:
     uv_udp_s*   m_pUdp;
+    uint32_t    m_nId;
     std::string m_strIP;
     uint32_t    m_nIP;
     uint16_t    m_bPort;

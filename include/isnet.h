@@ -3,6 +3,7 @@
 #include <string>
 #include <stdint.h>
 #include <syslog.h>
+#include <map>
 
 struct ISNLink;
 struct ISNLinkHandler;
@@ -31,6 +32,7 @@ struct ISNLink {
     virtual int     connect(const std::string& ip, uint16_t port) = 0;
     virtual int     close() = 0;
     virtual bool    is_tcp() = 0;
+    virtual uint32_t linkid() = 0;
     virtual int     send(const char* data, size_t len) = 0;
     virtual std::string ip_str() = 0;
     virtual uint32_t ip() = 0;
@@ -113,6 +115,19 @@ public:
     virtual void    close() = 0;
 };
 
+struct ISNHttpServerHandler {
+public:
+    virtual void    on_get(const std::string& url, const std::map<std::string, std::string>& headers, std::string& res) = 0;
+    virtual void    on_post(const std::string& url, const std::map<std::string, std::string>& headers, const std::string& body, std::string& res) = 0;
+};
+
+struct ISNHttpServer {
+    virtual ~ISNHttpServer() {}
+    virtual void    set_handler(ISNHttpServerHandler* handler) = 0;
+    virtual void    listen(uint16_t base_port) = 0;
+    virtual int     close() = 0;
+};
+
 /**
  * somo net factory object
  */
@@ -120,6 +135,7 @@ class SNFactory {
 public:
     static ISNTcpServer* createTcpServer();
     static ISNUdpServer* createUdpServer();
+    static ISNHttpServer*createHttpServer();
     static ISNTcpLink*   createTcpLink();
     static ISNUdpLink*   createUdpLink();
     static ISNTimer*     createTimer();
