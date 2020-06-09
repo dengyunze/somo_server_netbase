@@ -1,9 +1,7 @@
-#include "udplink.h"
-#include "ilinkhandler.h"
-#include "ioengine.h"
-#include "timer.h"
-#include "uni.h"
+#include "isnet.h"
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
 #define __CLASS__ "ClientTimer"
 
@@ -12,9 +10,9 @@ public:
     ClientTimer(ISNLink* link) {
         m_pLink = link;
         
-        m_pTimer = new Timer();
+        m_pTimer = SNFactory::createTimer();
         m_pTimer->init(1);
-        m_pTimer->setHandler(this);
+        m_pTimer->set_handler(this);
         m_pTimer->start(100);
     }
 
@@ -23,14 +21,14 @@ public:
     }
 
 public:
-    virtual void    onTimer(int id) {
+    virtual void    on_timer(int id) {
         char* buf = new char[1200];
         memset(buf, 0, 1200);
         m_pLink->send(buf, 1200);
     }
 
     virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
-        FUNLOG(Info, "udp link on data, len=%u", len);
+        NETLOG(Info, "udp link on data, len=%u", len);
     }
 
 private:
@@ -40,15 +38,15 @@ private:
 
 
 int main(int argc, char* argv[]) {
-    ISNStartup();
+    SNStartup();
 
-    ISNLink* link = SNLinkFactory::createUdpLink();
+    ISNLink* link = SNFactory::createUdpLink();
     link->connect( "127.0.0.1", 8000);
     link->send("good", 4);
 
     ClientTimer timer(link);
 
-    ISNLoop();
+    SNLoop();
 
     return 0;
 }

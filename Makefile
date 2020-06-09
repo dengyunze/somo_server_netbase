@@ -34,5 +34,5 @@ $(TARGET) : $(OBJECTS)
 .PHONY : clean
 
 clean:
-	rm $(OBJECTS)
-	rm $(TARGET)
+	rm $(OBJECTS) -f
+	rm $(TARGET) -f 

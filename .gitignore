@@ -2,3 +2,6 @@ libnetbase.a
 testclient/testclient
 testserver/testserver
 build/objs/
+.vscode/
+test/testudpclient/testudpclient
+test/testudpserver/testudpserver

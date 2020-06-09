@@ -1,5 +1,4 @@
 #include "isnet.h"
-#include "logger.h"
 
 #include <stdlib.h>
 
@@ -15,8 +14,10 @@ public:
     virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
         m_nRecvs++;
         if( m_nRecvs%100 == 0 ) {
-            FUNLOG(Info, "udp server handler on data, len=%d", len);
+            NETLOG(, "udp server handler on data, len=%d", len);
         }
+
+        return len;
     }
 
 private:
@@ -24,15 +25,15 @@ private:
 };
 
 int main(int argc, char* argv[]) {
-    ISNStartup();
+    SNStartup();
 
     ServerHandler handler;
 
-    ISNUdpServer* server = SNLinkFactory::createUdpServer();
+    ISNUdpServer* server = SNFactory::createUdpServer();
     server->set_handler(&handler);
     server->listen(8000);
 
-    ISNLoop();
+    SNLoop();
 
     return 0;
 }

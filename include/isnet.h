@@ -2,6 +2,7 @@
 
 #include <string>
 #include <stdint.h>
+#include <syslog.h>
 
 struct ISNLink;
 struct ISNLinkHandler;
@@ -10,6 +11,14 @@ struct ISNTcpServer;
 struct ISNTcpLink;
 struct ISNUdpServer;
 struct ISNUdpLink;
+
+/*
+ * for easy log to syslog, refer to logger.h and logger.cpp
+ */
+extern void log(int level, const char *fmt, ...);
+#define NETLOG(level, fmt, ...)   log(LOG_INFO, "[%s::%s]:" fmt,  __CLASS__, __FUNCTION__, __VA_ARGS__)
+
+
 
 /**
  * link base class, it's usually a client link or server link object that mapped to a client link.
