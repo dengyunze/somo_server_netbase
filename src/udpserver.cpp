@@ -16,6 +16,7 @@
 
 #define __CLASS__ "UdpServer"
 
+//link expire if no packet for 15 seconds
 #define UDP_EXPIRE  1000*15
 
 char*   UdpServer::s_pStaticBuf = NULL;

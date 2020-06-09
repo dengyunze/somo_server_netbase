@@ -16,7 +16,6 @@ public:
     void run();
 
 private:
-    typedef std::set<FdBase*> fd_set_t;
     uv_loop_s*  m_pLoop;
     bool        m_bRunning;
 };

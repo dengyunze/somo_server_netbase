@@ -1,0 +1,1 @@
+libuv 1.38, for license please refer to LICENSE in this folder
