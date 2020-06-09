@@ -23,49 +23,103 @@
 ### 1. create an udp server:
 
 ```
-      int main(int argc, char* argv[]) {
-          SNStartup();
+#include "isnet.h"
+#include "logger.h"
 
-          ServerHandler handler;
+#include <stdlib.h>
 
-          ISNUdpServer* server = SNLinkFactory::createUdpServer();
-          server->set_handler(&handler);
-          server->listen(8000);
+#define __CLASS__ "ServerHandler"
 
-          SNLoop();
+class ServerHandler : public ISNLinkHandler {
+public:
+    ServerHandler() {
 
-          return 0;
-      }      
-      
-      class ServerHandler : public ISNLinkHandler {
-      public:
-      virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
-            m_nRecvs++;
-            if( m_nRecvs%100 == 0 ) {
-                  FUNLOG(Info, "udp server handler on data, len=%d", len);
-            }
-      }
-      private:
-      int     m_nRecvs;
-      };     
+    }
+
+public:
+    virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
+        m_nRecvs++;
+        if( m_nRecvs%100 == 0 ) {
+            FUNLOG(Info, "udp server handler on data, len=%d", len);
+        }
+    }
+
+private:
+    int     m_nRecvs;
+};
+
+int main(int argc, char* argv[]) {
+    ISNStartup();
+
+    ServerHandler handler;
+
+    ISNUdpServer* server = SNLinkFactory::createUdpServer();
+    server->set_handler(&handler);
+    server->listen(8000);
+
+    ISNLoop();
+
+    return 0;
+}   
 ```      
 
 ### 2. create an udp client:
 
 ```
-      int main(int argc, char* argv[]) {
-          SNStartup();
+#include "udplink.h"
+#include "ilinkhandler.h"
+#include "ioengine.h"
+#include "timer.h"
+#include "uni.h"
+#include <stdlib.h>
 
-          ISNLink* link = SNLinkFactory::createUdpLink();
-          link->connect( "127.0.0.1", 8000);
-          link->send("good", 4);
+#define __CLASS__ "ClientTimer"
 
-          ClientTimer timer(link);
+class ClientTimer : public ISNTimerHandler, public ISNLinkHandler {
+public:
+    ClientTimer(ISNLink* link) {
+        m_pLink = link;
+        
+        m_pTimer = new Timer();
+        m_pTimer->init(1);
+        m_pTimer->setHandler(this);
+        m_pTimer->start(100);
+    }
 
-          SNLoop();
+    ~ClientTimer() {
+        m_pTimer->close();
+    }
 
-          return 0;
-      }
+public:
+    virtual void    onTimer(int id) {
+        char* buf = new char[1200];
+        memset(buf, 0, 1200);
+        m_pLink->send(buf, 1200);
+    }
+
+    virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
+        FUNLOG(Info, "udp link on data, len=%u", len);
+    }
+
+private:
+    ISNTimer*   m_pTimer;
+    ISNLink*    m_pLink;
+};
+
+
+int main(int argc, char* argv[]) {
+    ISNStartup();
+
+    ISNLink* link = SNLinkFactory::createUdpLink();
+    link->connect( "127.0.0.1", 8000);
+    link->send("good", 4);
+
+    ClientTimer timer(link);
+
+    ISNLoop();
+
+    return 0;
+}
 ```      
 
 ## packet format

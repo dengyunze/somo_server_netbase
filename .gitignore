@@ -1,3 +1,4 @@
 libnetbase.a
 testclient/testclient
 testserver/testserver
+build/objs/

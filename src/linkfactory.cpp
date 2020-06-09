@@ -1,3 +1,4 @@
+#include "linkfactory.h"
 #include "isnet.h"
 #include "tcpserver.h"
 #include "udpserver.h"
