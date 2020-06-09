@@ -1,12 +1,11 @@
 # somo_server_netbase
-## C++ wrapper on libuv for easy usage, including following components:
+## C++ wrapper on libuv for easy usage, including following features:
 
 1. tcp+udp server on epoll;
 2. tcp+udp client on epoll;
-3. multiple components in same thread, like a process listen on tcp port 8000, udp port 8001, and another tcp link connect to another tcp server.
-4. timers on epoll;
-5. internal keep alive check;
-6. single thread model only, no multi-threads components;
+3. timers on epoll;
+4. internal keep alive check;
+5. single thread loop, no multi-threads components;
 7. memory pool for quick network packet copy；
 8. multi-read and multi-write for performance [TODO];
 9. reliable udp (ARQ);
@@ -14,9 +13,9 @@
 11. network transfer stats;
 
 ## How to use
-1. call SNStartup to init the environment, include socket limit and ignore signals;
+1. call SNStartup to init the environment, handle socket limit and ignore signals;
 2. use SNLinkFactory to create a ISNUdpServer;
-3. set a ISNLinkHandler to the ISNUdpServer, ISNLinkHandler.on_data will will be called when data come;
+3. set a ISNLinkHandler to the ISNUdpServer, ISNLinkHandler.on_data will be called when data come;
 4. call SNLoop to start epoll loop;
 
 ## Scenario:
@@ -126,7 +125,7 @@ int main(int argc, char* argv[]) {
 ```      
 
 ## packet format
-LinkHandlerBase suppose the network packet start with len (4 bytes). 
+
       
 ## Benchmark
 soon later!
