@@ -20,7 +20,7 @@
 4. call SNLoop to start epoll loop;
 
 ## Scenario:
-### 1. create an udp server:
+### 1. create a server for both tcp and udp, on port 8000:
 
 ```
 #include "isnet.h"
@@ -54,14 +54,18 @@ int main(int argc, char* argv[]) {
 
     ServerHandler handler;
 
-    ISNUdpServer* server = SNFactory::createUdpServer();
-    server->set_handler(&handler);
-    server->listen(8000);
+    ISNUdpServer* udp_server = SNFactory::createUdpServer();
+    udp_server->set_handler(&handler);
+    udp_server->listen(8000);
+
+    ISNTcpServer* tcp_server = SNFactory::createTcpServer();
+    tcp_server->set_handler(&handler);
+    tcp_server->listen(8000);
 
     SNLoop();
 
     return 0;
-}   
+}
 ```      
 
 ### 2. create an udp client:
