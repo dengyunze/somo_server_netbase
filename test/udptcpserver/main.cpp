@@ -29,9 +29,13 @@ int main(int argc, char* argv[]) {
 
     ServerHandler handler;
 
-    ISNUdpServer* server = SNFactory::createUdpServer();
-    server->set_handler(&handler);
-    server->listen(8000);
+    ISNUdpServer* udp_server = SNFactory::createUdpServer();
+    udp_server->set_handler(&handler);
+    udp_server->listen(8000);
+
+    ISNTcpServer* tcp_server = SNFactory::createTcpServer();
+    tcp_server->set_handler(&handler);
+    tcp_server->listen(8000);
 
     SNLoop();
 
