@@ -1,5 +1,4 @@
 #include "netaddr.h"
-#include "comm.h"
 
 #include <arpa/inet.h>
 #include <sys/time.h>
@@ -8,8 +7,6 @@
 #include <string>
 #include <sstream>
 #include <unistd.h>
-
-using namespace somo::video;
 
 uint32_t netaddr::get_host_ip(const char* hostname)
 {

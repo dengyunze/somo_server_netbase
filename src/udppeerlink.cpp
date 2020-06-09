@@ -3,11 +3,9 @@
 
 #include "uv.h"
 #include "env.h"
-#include "comm.h"
 #include "ioengine.h"
 #include "logger.h"
-#include "packbuf.h"
-#include "uni.h"
+#include "netaddr.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -24,7 +22,7 @@ UdpPeerLink::UdpPeerLink(UdpServer* server, uint32_t ip, uint16_t port)
 , m_nSends(0)
 , m_nStamp(0)
 {
-    m_strIP = uni::addr_ntoa(ip);
+    m_strIP = netaddr::ntoa(ip);
 }
 
 UdpPeerLink::~UdpPeerLink()

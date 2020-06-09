@@ -1,13 +1,10 @@
 #pragma once
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string>
 #include <vector>
 #include <set>
-#include "packet.h"
-
-namespace somo{
-namespace video{
 
 class netaddr
 {
@@ -18,6 +15,4 @@ public:
     static std::string     ntoa(uint32_t ip);
 };
 
-}
-}
 

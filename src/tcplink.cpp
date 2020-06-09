@@ -4,11 +4,10 @@
 
 #include "uv.h"
 #include "env.h"
-#include "comm.h"
 #include "logger.h"
 #include "ioengine.h"
-#include "packbuf.h"
-#include "uni.h"
+#include "timeutil.h"
+#include "netaddr.h"
 
 #include <netinet/tcp.h>
 #include <sys/socket.h>
@@ -76,7 +75,7 @@ void TcpLink::set_handler(ISNLinkHandler* handler) {
 
 int TcpLink::connect(const std::string& ip, uint16_t port) {
     m_strIP = ip;
-    m_nIP = uni::addr_aton(ip.c_str());
+    m_nIP = netaddr::aton(ip.c_str());
     m_bPort = port;
 
     if( m_nReconnects%15 == 0 ) {

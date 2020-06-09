@@ -4,11 +4,9 @@
 
 #include "uv.h"
 #include "env.h"
-#include "comm.h"
 #include "ioengine.h"
 #include "logger.h"
-#include "packbuf.h"
-#include "uni.h"
+#include "netaddr.h"
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -44,7 +42,7 @@ int UdpLink::connect(const std::string& ip, uint16_t port)
 {
     FUNLOG(Info, "udp link connect, ip=%s, port=%d", ip.c_str(), port);
     m_strIP = ip;
-    m_nIP = uni::addr_aton(ip.c_str());
+    m_nIP = netaddr::aton(ip.c_str());
     m_bPort = port;
 
     m_peer_addr.sin_family = AF_INET;

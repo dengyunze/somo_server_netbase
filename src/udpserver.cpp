@@ -6,11 +6,9 @@
 
 #include "uv.h"
 #include "env.h"
-#include "comm.h"
 #include "ioengine.h"
 #include "logger.h"
-#include "packbuf.h"
-#include "uni.h"
+#include "timeutil.h"
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -90,7 +88,7 @@ void UdpServer::answer(const char* data, int len, uint32_t ip, short port) {
 void UdpServer::on_timer(int id) {
     std::set<uint64_t> expires;
 
-    uint64_t now = uni::sys_time_msec();
+    uint64_t now = timeutil::sys_time_msec();
     for(auto it = m_mapLink.begin(); it!=m_mapLink.end(); it++ ) {
         if( now >= it->second->stamp() >= UDP_EXPIRE ) {
             FUNLOG(Info, "peer link expire, node=%llu", it->first);

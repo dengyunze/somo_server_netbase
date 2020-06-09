@@ -1,6 +1,5 @@
 #include "ioengine.h"
 #include "isnet.h"
-#include "comm.h"
 #include "logger.h"
 #include "uv.h"
 

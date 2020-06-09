@@ -6,9 +6,6 @@
 #include <vector>
 #include <set>
 
-namespace somo {
-namespace video {
-
 class timeutil
 {
 public:
@@ -16,6 +13,4 @@ public:
     static uint64_t     sys_time_msec();
 };
 
-}
-}
 

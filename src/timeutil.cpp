@@ -4,8 +4,6 @@
 #include <memory.h>
 #include <string>
 
-using namespace somo::video;
-
 uint32_t timeutil::sys_time_sec()
 {
     return ::time(NULL);
