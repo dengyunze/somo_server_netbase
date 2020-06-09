@@ -129,7 +129,9 @@ int main(int argc, char* argv[]) {
 LinkHandlerBase suppose the network packet start with len (4 bytes). 
       
 ## Benchmark
-soon later!
+packet size | tps | cpu |
+1200 | 100000 | 31.6%
+1200 | 300000 | 68%
  
 ## Where is the logs?
 tail -f /var/log/message | grep {your_app_name}
