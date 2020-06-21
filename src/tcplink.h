@@ -76,6 +76,7 @@ private:
     uint32_t    m_nReconnectErrors;
     uint32_t    m_nSendErrors;
     uint32_t    m_nReads;
+    uint32_t    m_nSends;
 
     static char* s_pStaticBuf;
 };

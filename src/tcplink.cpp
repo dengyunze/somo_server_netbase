@@ -36,6 +36,7 @@ TcpLink::TcpLink()
 , m_pHandler(NULL)
 , m_nReconnects(0)
 , m_nReads(0)
+, m_nSends(0)
 , m_nSendErrors(0)
 {
     m_nCapacity = TCP_LINK_BUFFER_DEFAULT;
@@ -156,6 +157,11 @@ int TcpLink::send(const char* data, size_t len) {
     if( r ) {
         FUNLOG(Error, "tcp link send failed, error=%s", uv_strerror(r));
         return -1;
+    }
+
+    sendData->link->m_nSends++;
+    if( sendData->link->m_nSends%1000 == 0 || sendData->link->m_nSends<=5 ) {
+        FUNLOG(Info, "tcp link send, sends=%d, len=%d", sendData->link->m_nSends, len);
     }
 
     return 0;
