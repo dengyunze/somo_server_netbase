@@ -42,6 +42,7 @@ public:
 private:
     void    addData(const char* data, int len);
     void    removeData(int len);
+    void    closeError();
 
 private:
     static void    on_connect(uv_connect_s* req, int status);

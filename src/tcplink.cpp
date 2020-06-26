@@ -168,9 +168,10 @@ int TcpLink::send(const char* data, size_t len) {
 }
 
 int TcpLink::close() {
-    if( m_pHandler ) {
-        m_pHandler->on_close(this);
-    }
+    //no callback to on_close on use close!
+    //if( m_pHandler ) {
+    //    m_pHandler->on_close(this);
+    //}
     m_bConnected = false;
 
     if( m_pTcp != NULL ) {
@@ -213,6 +214,21 @@ void TcpLink::removeData(int len) {
         //time to shrink:
         memcpy(m_pBuffer, m_pBuffer+m_nPos, m_nLen);
         m_nPos = 0;
+    }
+}
+
+void TcpLink::closeError() {
+    if( m_pHandler ) {
+        m_pHandler->on_close(this);
+    }
+    m_bConnected = false;
+
+    if( m_pTcp != NULL ) {
+        uv_close((uv_handle_t*)m_pTcp, NULL);
+        m_pTcp = NULL;
+    }
+    if( m_pTimer != NULL ) {
+        uv_timer_stop(m_pTimer);
     }
 }
 
