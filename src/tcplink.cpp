@@ -305,7 +305,7 @@ void TcpLink::on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
      }
      if (nread < 0) {
         FUNLOG(Error, "tcp link read error %s", uv_err_name(nread));
-        link->close();
+        //link->close();
 
         //free buf:
         //free(buf->base);
@@ -313,6 +313,8 @@ void TcpLink::on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
         //start the reconnect timer:
         if( !link->m_bPeerLink ) {
             uv_timer_start(link->m_pTimer, on_timer, 1000, 1000);
+        } else {
+            link->closeError();
         }
      }
 }
