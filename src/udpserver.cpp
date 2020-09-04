@@ -91,7 +91,7 @@ void UdpServer::on_timer(int id) {
 
     uint64_t now = timeutil::sys_time_msec();
     for(auto it = m_mapLink.begin(); it!=m_mapLink.end(); it++ ) {
-        if( now >= it->second->stamp() >= UDP_EXPIRE ) {
+        if( now >= it->second->stamp() + UDP_EXPIRE ) {
             FUNLOG(Info, "peer link expire, node=%llu", it->first);
             delete it->second;
             expires.insert(it->first);
