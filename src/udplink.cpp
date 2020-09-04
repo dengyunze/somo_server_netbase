@@ -71,7 +71,7 @@ int  UdpLink::send(const char* data, size_t len) {
     */
 
     m_nSends++;
-    if( m_nSends%1000 == 0 || m_nSends<=5 ) {
+    if( m_nSends%10000 == 0 || m_nSends<=5 ) {
         FUNLOG(Info, "udp link send, len=%d, sends=%llu", len, m_nSends);
     }
 
