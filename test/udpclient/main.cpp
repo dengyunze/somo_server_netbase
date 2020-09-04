@@ -14,6 +14,9 @@ public:
         m_pTimer->init(1);
         m_pTimer->set_handler(this);
         m_pTimer->start(1);
+
+        m_pBuf = new char[1300];
+        memset(m_pBuf, 0, 1300);
     }
 
     ~ClientTimer() {
@@ -22,11 +25,8 @@ public:
 
 public:
     virtual void    on_timer(int id) {
-        char* buf = new char[1200];
-        memset(buf, 0, 1200);
-
-        for( int i=0; i<50; i++ ) {
-            m_pLink->send(buf, 1200);
+        for( int i=0; i<100; i++ ) {
+            m_pLink->send(m_pBuf, 1300);
         }
     }
 
@@ -37,6 +37,7 @@ public:
 private:
     ISNTimer*   m_pTimer;
     ISNLink*    m_pLink;
+    char*       m_pBuf;
 };
 
 
