@@ -71,8 +71,9 @@ int  UdpLink::send(const char* data, size_t len) {
     */
 
     m_nSends++;
-    if( m_nSends%10000 == 0 || m_nSends<=5 ) {
-        FUNLOG(Info, "udp link send, len=%d, sends=%llu", len, m_nSends);
+    if( m_nSends%30000 == 0 || m_nSends<=300 ) {
+        size_t queue_size = uv_udp_get_send_queue_count(m_pUdp);
+        FUNLOG(Info, "udp link send, len=%d, sends=%llu, queue_size=%d", len, m_nSends, queue_size);
     }
 
     //char* new_buf = (char*)malloc(len);
@@ -83,13 +84,21 @@ int  UdpLink::send(const char* data, size_t len) {
         return 0;
     }
     mem->assign(data, len);
-
+    
     uv_buf_t buf = uv_buf_init(const_cast<char*>(mem->data()), len);
-    uv_udp_send_t* send = (uv_udp_send_t*)malloc(sizeof(uv_udp_send_t));
-    send->data = mem;
-    uv_udp_send(send, m_pUdp, &buf, 1, NULL, on_send);
 
-    return 0;
+    //try send first
+    int sent_bytes = uv_udp_try_send(m_pUdp, &buf, 1, NULL);
+    if( sent_bytes <= 0 ) {
+        //FUNLOG(Info, "udp link try send failed, send again! bytes=%d", sent_bytes);
+        uv_udp_send_t* send = (uv_udp_send_t*)malloc(sizeof(uv_udp_send_t));
+        send->data = mem;
+        uv_udp_send(send, m_pUdp, &buf, 1, NULL, on_send);
+    } else {
+        MemPool::Ins()->free(mem);
+    }
+
+    return sent_bytes;
 }
 
 int UdpLink::send(const char* data, size_t len, uint32_t ip, uint16_t port) {
@@ -98,8 +107,9 @@ int UdpLink::send(const char* data, size_t len, uint32_t ip, uint16_t port) {
     }
 
     m_nSends++;
-    if( m_nSends%10000 == 0 || m_nSends<=300 ) {
-        FUNLOG(Info, "udp link send, len=%d, sends=%llu", len, m_nSends);
+    if( m_nSends%30000 == 0 || m_nSends<=300 ) {
+        size_t queue_size = uv_udp_get_send_queue_count(m_pUdp);
+        FUNLOG(Info, "udp link send, len=%d, sends=%llu, queue_size=%d", len, m_nSends, queue_size);
     }
 
     struct sockaddr_in addr;
@@ -115,11 +125,19 @@ int UdpLink::send(const char* data, size_t len, uint32_t ip, uint16_t port) {
     mem->assign(data, len);
 
     uv_buf_t buf = uv_buf_init(const_cast<char*>(mem->data()), len);
-    uv_udp_send_t* send = (uv_udp_send_t*)malloc(sizeof(uv_udp_send_t));
-    send->data = this;
-    uv_udp_send(send, m_pUdp, &buf, 1, (const sockaddr*)&addr, on_send);
 
-    return 0;
+    //try send first
+    int sent_bytes = uv_udp_try_send(m_pUdp, &buf, 1, NULL);
+    if( sent_bytes <= 0 ) {
+        FUNLOG(Info, "udp link try send failed, send again! bytes=%d", sent_bytes);
+        uv_udp_send_t* send = (uv_udp_send_t*)malloc(sizeof(uv_udp_send_t));
+        send->data = mem;
+        uv_udp_send(send, m_pUdp, &buf, 1, NULL, on_send);
+    } else {
+        MemPool::Ins()->free(mem);
+    }
+
+    return sent_bytes;
 }
 
 int UdpLink::close()

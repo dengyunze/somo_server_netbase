@@ -160,7 +160,7 @@ int TcpLink::send(const char* data, size_t len) {
     }
 
     sendData->link->m_nSends++;
-    if( sendData->link->m_nSends%1000 == 0 || sendData->link->m_nSends<=5 ) {
+    if( sendData->link->m_nSends%30000 == 0 || sendData->link->m_nSends<=5 ) {
         FUNLOG(Info, "tcp link send, sends=%d, len=%d", sendData->link->m_nSends, len);
     }
 

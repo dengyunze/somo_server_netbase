@@ -25,13 +25,13 @@ public:
 
 public:
     virtual void    on_timer(int id) {
-        for( int i=0; i<100; i++ ) {
+        for( int i=0; i<200; i++ ) {
             m_pLink->send(m_pBuf, 1300);
         }
     }
 
     virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
-        NETLOG(Info, "udp link on data, len=%u", len);
+        //NETLOG(Info, "udp link on data, len=%u", len);
     }
 
 private:
