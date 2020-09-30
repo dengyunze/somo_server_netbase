@@ -72,7 +72,7 @@ int     HttpPeerLink::on_url(http_parser* parser, const char *data, size_t lengt
         break;
         case HTTP_POST:
             //link->m_strMethod = "POST";
-            link->m_pRequest->set_method( "METHOD" );
+            link->m_pRequest->set_method( "POST" );
         break;
     }
 
