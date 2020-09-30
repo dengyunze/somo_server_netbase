@@ -1,5 +1,9 @@
 # somo_server_netbase
-## C++ wrapper on libuv for easy usage, including following features:
+
+## Why another wrapper for libuv
+I'm trying to write a high performance audio&video SFU server, and I need a simple network layer. libuv is good for everything but it's still a little complex on APIs. So I create the wrapper, to make SFU servers doesn't need to care about network problems.
+
+## Features:
 
 1. tcp+udp server on epoll;
 2. tcp+udp client on epoll;
@@ -9,13 +13,21 @@
 6. memory pool for quick network packet copy；
 7. easy to use;
 
-## How to use
+## Usage
 1. call SNStartup to init the environment, handle socket limit and ignore signals;
 2. use SNFactory to create a ISNUdpServer;
 3. set a ISNLinkHandler to the ISNUdpServer, ISNLinkHandler.on_data will be called when data come;
 4. call SNLoop to start epoll loop;
 
-## Scenario:
+## Build:
+1, git clone http://github.com/dengyunze/somo_server_netbase.git
+2, cd to that folder;
+3, make;
+
+To run tests, just move to test and make.
+
+
+## Samples:
 ### 1. create a server for both tcp and udp, on port 8000:
 
 ```
@@ -121,8 +133,6 @@ int main(int argc, char* argv[]) {
 }
 ```      
 
-## packet format
-
       
 ## Benchmark
 packet size | client | tps per client | cpu |
@@ -133,5 +143,5 @@ packet size | client | tps per client | cpu |
 ## Where is the logs?
 tail -f /var/log/message | grep {your_app_name}
 
-##Note:
+## Note:
 1, This wrapper is design for single-thread server usage with highly performance requiremen;
