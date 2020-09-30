@@ -284,7 +284,7 @@ void TcpLink::on_read(uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
         return;
     }
     link->m_nReads++;
-    if( link->m_nReads%10000 == 0 ) {
+    if( link->m_nReads%30000 == 0 ) {
         FUNLOG(Info, "tcp link read, id=%d, len=%d, count=%u", link->m_nId, nread, link->m_nReads);
     }
 
@@ -356,7 +356,7 @@ void TcpLink::on_write(uv_write_t* req, int status) {
 }
 
 void TcpLink::on_timer(uv_timer_t* handle) {
-    FUNLOG(Info, "tcp link timer!!!", NULL);
+    //FUNLOG(Info, "tcp link timer!!!", NULL);
     TcpLink* link = (TcpLink*)handle->data;
     if( link == NULL ) {
         FUNLOG(Error, "tcp link timer failed, link==NULL", NULL);

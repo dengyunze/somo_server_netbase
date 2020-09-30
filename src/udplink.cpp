@@ -71,7 +71,7 @@ int  UdpLink::send(const char* data, size_t len) {
     */
 
     m_nSends++;
-    if( m_nSends%30000 == 0 || m_nSends<=300 ) {
+    if( m_nSends%30000 == 0 || m_nSends<=5 ) {
         size_t queue_size = uv_udp_get_send_queue_count(m_pUdp);
         FUNLOG(Info, "udp link send, len=%d, sends=%llu, queue_size=%d", len, m_nSends, queue_size);
     }
@@ -107,7 +107,7 @@ int UdpLink::send(const char* data, size_t len, uint32_t ip, uint16_t port) {
     }
 
     m_nSends++;
-    if( m_nSends%30000 == 0 || m_nSends<=300 ) {
+    if( m_nSends%30000 == 0 || m_nSends<=3 ) {
         size_t queue_size = uv_udp_get_send_queue_count(m_pUdp);
         FUNLOG(Info, "udp link send, len=%d, sends=%llu, queue_size=%d", len, m_nSends, queue_size);
     }
@@ -187,7 +187,7 @@ void    UdpLink::on_read(uv_udp_s* handle, ssize_t nread, const uv_buf_t* buf, c
 
     if( nread > 0 ) {
         link->m_nReads++;
-        if( link->m_nReads%10000 == 0 || link->m_nReads<= 5 ) {
+        if( link->m_nReads%10000 == 0 || link->m_nReads<= 3 ) {
             FUNLOG(Info, "udp link read, len=%d, count=%u", nread, link->m_nReads);
         }
 

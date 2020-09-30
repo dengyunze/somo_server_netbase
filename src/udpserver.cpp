@@ -9,6 +9,7 @@
 #include "ioengine.h"
 #include "logger.h"
 #include "timeutil.h"
+#include "netaddr.h"
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -16,8 +17,7 @@
 
 #define __CLASS__ "UdpServer"
 
-//link expire if no packet for 15 seconds
-#define UDP_EXPIRE  1000*15
+#define UDP_EXPIRE  1000*60
 
 char*   UdpServer::s_pStaticBuf = NULL;
 UdpServer::UdpServer()
@@ -92,14 +92,14 @@ void UdpServer::on_timer(int id) {
     uint64_t now = timeutil::sys_time_msec();
     for(auto it = m_mapLink.begin(); it!=m_mapLink.end(); it++ ) {
         if( now >= it->second->stamp() + UDP_EXPIRE ) {
-            FUNLOG(Info, "peer link expire, node=%llu", it->first);
+            FUNLOG(Info, "udp server expire peer link, node=%llu", it->first);
             delete it->second;
             expires.insert(it->first);
         }
     }
 
-    for( auto it=m_mapLink.begin(); it!=m_mapLink.end(); it++ ) {
-        m_mapLink.erase(it);
+    for( auto it=expires.begin(); it!=expires.end(); it++ ) {
+        m_mapLink.erase(*it);
     }
 }
 
@@ -169,8 +169,7 @@ void    UdpServer::on_send(uv_udp_send_t* req, int status) {
     } else {
         MemPool::Ins()->free(mem);
     }
-
-    //free(req->bufs);
+    free(req);
 }
 
 uint64_t    UdpServer::create_node(uint32_t ip, uint16_t port) {
@@ -183,18 +182,24 @@ uint64_t    UdpServer::create_node(uint32_t ip, uint16_t port) {
 
 UdpPeerLink* UdpServer::add_node(uint32_t ip, uint16_t port) {
     if( ip == 0 || port == 0 ) {
-        FUNLOG(Error, "udp server add node, ip==0 or port==0, ip/port=%u/%d", ip, port);
+        FUNLOG(Error, "udp server add node, ip==0 or port==0, ip/port=%s/%d", netaddr::ntoa(ip).c_str(), port);
         return NULL;
     }
-
+    uint64_t now = timeutil::sys_time_msec();
     uint64_t node = create_node(ip, port);
     std::map<uint64_t, UdpPeerLink*>::iterator it = m_mapLink.find(node);
     if( it != m_mapLink.end() ) {
+        //FUNLOG(Info, "udp server use exist peer link, ip=%s, port=%d", uni::addr_ntoa(ip).c_str(), port);
+        it->second->set_stamp(now);
         return it->second;
     }
 
+    FUNLOG(Info, "udp server create peer link, ip=%s, port=%d", netaddr::ntoa(ip).c_str(), port);
     UdpPeerLink* link = new UdpPeerLink(this, ip, port);
+    link->set_handler( m_pHandler );
+    link->set_stamp( now );
     m_mapLink[node] = link;
+
     return link;
 }
 
