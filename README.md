@@ -4,13 +4,9 @@
 1. tcp+udp server on epoll;
 2. tcp+udp client on epoll;
 3. timers on epoll;
-4. internal keep alive check;
-5. single thread loop, no multi-threads components;
-7. memory pool for quick network packet copy；
-8. multi-read and multi-write for performance [TODO];
-9. reliable udp (ARQ);
-10. bandwidth check;
-11. network transfer stats;
+4. single thread loop, no multi-threads components;
+5. memory pool for quick network packet copy；
+6. easy to use;
 
 ## How to use
 1. call SNStartup to init the environment, handle socket limit and ignore signals;
@@ -67,7 +63,7 @@ int main(int argc, char* argv[]) {
 }
 ```      
 
-### 2. create an udp client:
+### 2. create an udp client, and send data every 1 second (with a ISNTimer).
 
 ```
 #include "isnet.h"
@@ -128,10 +124,13 @@ int main(int argc, char* argv[]) {
 
       
 ## Benchmark
-packet size | tps | cpu |
+packet size | client | tps/client | cpu |
 ---|---|---
-1200 | 100000 | 31.6%
-1200 | 300000 | 68%
+1200 | 3 | 100000 | 31.6%
+1200 | 3 | 300000 | 68%
  
 ## Where is the logs?
 tail -f /var/log/message | grep {your_app_name}
+
+Note:
+This wrapper is design for single-thread server usage with highly performance requirement, client usage is not main scenario.

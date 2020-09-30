@@ -43,7 +43,6 @@ struct ISNLink {
  * server base class.
 
  * ISNUdpServer and ISNTcpServer inhereit from this.
- *
  */
 struct ISNServer {
 public:
