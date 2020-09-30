@@ -125,7 +125,7 @@ int main(int argc, char* argv[]) {
       
 ## Benchmark
 packet size | client | tps/client | cpu |
----|---|---
+---|---|---|---
 1200 | 3 | 100000 | 31.6%
 1200 | 3 | 300000 | 68%
  
