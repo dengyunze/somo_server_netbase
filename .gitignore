@@ -5,3 +5,4 @@ test/tcpclient/tcpclient
 test/udpclient/udpclient
 test/udptcpserver/udptcpserver
 test/udpbenchmark/udpbenchmark
+test/httpserver/httpserver

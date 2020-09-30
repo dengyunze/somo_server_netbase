@@ -11,7 +11,7 @@
 
 ## How to use
 1. call SNStartup to init the environment, handle socket limit and ignore signals;
-2. use SNLinkFactory to create a ISNUdpServer;
+2. use SNFactory to create a ISNUdpServer;
 3. set a ISNLinkHandler to the ISNUdpServer, ISNLinkHandler.on_data will be called when data come;
 4. call SNLoop to start epoll loop;
 
