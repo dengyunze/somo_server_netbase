@@ -13,7 +13,7 @@ public:
 public:
     virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
         m_nRecvs++;
-        if( m_nRecvs%1000 == 0 ) {
+        if( m_nRecvs%30000 == 0 ) {
             NETLOG(, "udp server handler on data, len=%d", len);
         }
 

@@ -13,7 +13,10 @@ public:
         m_pTimer = SNFactory::createTimer();
         m_pTimer->init(1);
         m_pTimer->set_handler(this);
-        m_pTimer->start(100);
+        m_pTimer->start(1);
+
+        m_pBuf = new char[1300];
+        memset(m_pBuf, 0, 1300);
     }
 
     ~ClientTimer() {
@@ -22,18 +25,19 @@ public:
 
 public:
     virtual void    on_timer(int id) {
-        char* buf = new char[1200];
-        memset(buf, 0, 1200);
-        m_pLink->send(buf, 1200);
+        for( int i=0; i<200; i++ ) {
+            m_pLink->send(m_pBuf, 1300);
+        }
     }
 
     virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
-        NETLOG(Info, "udp link on data, len=%u", len);
+        //NETLOG(Info, "udp link on data, len=%u", len);
     }
 
 private:
     ISNTimer*   m_pTimer;
     ISNLink*    m_pLink;
+    char*       m_pBuf;
 };
 
 

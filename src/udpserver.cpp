@@ -136,7 +136,7 @@ void UdpServer::on_read(uv_udp_t* handle, ssize_t nread, const uv_buf_t* buf, co
         return;
     } else {
         server->m_nReads++;
-        if( server->m_nReads%1000 == 0 || server->m_nReads<= 5 ) {
+        if( server->m_nReads%10000 == 0 || server->m_nReads<= 5 ) {
             FUNLOG(Info, "udp server read, len=%d, count=%u", nread, server->m_nReads);
         }
         //char* temp = buf->base;
