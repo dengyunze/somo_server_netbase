@@ -4,9 +4,10 @@
 1. tcp+udp server on epoll;
 2. tcp+udp client on epoll;
 3. timers on epoll;
-4. single thread loop, no multi-threads components;
-5. memory pool for quick network packet copy；
-6. easy to use;
+4. http server on epoll;
+5. single thread loop, no multi-threads components;
+6. memory pool for quick network packet copy；
+7. easy to use;
 
 ## How to use
 1. call SNStartup to init the environment, handle socket limit and ignore signals;
@@ -124,7 +125,7 @@ int main(int argc, char* argv[]) {
 
       
 ## Benchmark
-packet size | client | tps/client | cpu |
+packet size | client | tps per client | cpu |
 ---|---|---|---
 1200 | 3 | 100000 | 31.6%
 1200 | 3 | 300000 | 68%
@@ -132,5 +133,5 @@ packet size | client | tps/client | cpu |
 ## Where is the logs?
 tail -f /var/log/message | grep {your_app_name}
 
-Note:
-This wrapper is design for single-thread server usage with highly performance requirement, client usage is not main scenario.
+##Note:
+1, This wrapper is design for single-thread server usage with highly performance requiremen;
