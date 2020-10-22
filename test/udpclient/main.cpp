@@ -13,7 +13,7 @@ public:
         m_pTimer = SNFactory::createTimer();
         m_pTimer->init(1);
         m_pTimer->set_handler(this);
-        m_pTimer->start(100);
+        m_pTimer->start(10);
 
         m_pBuf = new char[1300];
         memset(m_pBuf, 0, 1300);
@@ -25,7 +25,7 @@ public:
 
 public:
     virtual void    on_timer(int id) {
-        for( int i=0; i<200; i++ ) {
+        for( int i=0; i<500; i++ ) {
             m_pLink->send(m_pBuf, 1300);
         }
     }

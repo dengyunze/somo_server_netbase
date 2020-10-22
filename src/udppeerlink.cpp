@@ -61,7 +61,7 @@ int UdpPeerLink::send(const char* data, size_t len, uint32_t ip, uint16_t port) 
     }
 
     m_nSends++;
-    if( m_nSends%10000 == 0 || m_nSends<=5 ) {
+    if( m_nSends%30000 == 0 || m_nSends<=5 ) {
         FUNLOG(Info, "udp peer link send, len=%d, sends=%llu", len, m_nSends);
     }
     m_pUdpServer->answer(data, len, ip, port);

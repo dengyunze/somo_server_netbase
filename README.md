@@ -44,7 +44,7 @@ public:
     }
 
 public:
-    virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
+    virtual int  on_data(const char* data, size_t len, ISNLink* pLink) {
         m_nRecvs++;
         if( m_nRecvs%100 == 0 ) {
             NETLOG(, "udp server handler on data, len=%d", len);
@@ -108,7 +108,7 @@ public:
         m_pLink->send(buf, 1200);
     }
 
-    virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
+    virtual int  on_data(const char* data, size_t len, ISNLink* pLink) {
         NETLOG(Info, "udp link on data, len=%u", len);
     }
 

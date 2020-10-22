@@ -56,6 +56,11 @@ public:
  * link handler interface, callback to app when data come, link connected or link closed.
  *
  * Both server&client use this link handler to handle link events.
+ * 
+ * Be carefull: 
+ * 1, don't delete pLink on any case. 
+ * 2, don't use the pLink after on_close.
+ * 
  */
 struct ISNLinkHandler
 {
@@ -128,7 +133,7 @@ struct ISNHttpServer {
 };
 
 /**
- * somo net factory object
+ * somo net factory object.
  */
 class SNFactory {
 public:

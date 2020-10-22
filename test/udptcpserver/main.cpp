@@ -11,10 +11,10 @@ public:
     }
 
 public:
-    virtual int  on_data(const char* data, size_t len, uint32_t ip, short port) {
+    virtual int  on_data(const char* data, size_t len, ISNLink* pLink) {
         m_nRecvs++;
         if( m_nRecvs%30000 == 0 ) {
-            NETLOG(, "udp server handler on data, len=%d", len);
+            //NETLOG(, "udp server handler on data, len=%d", len);
         }
 
         return len;
