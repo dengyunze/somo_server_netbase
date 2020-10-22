@@ -13,7 +13,7 @@ public:
         m_pTimer = SNFactory::createTimer();
         m_pTimer->init(1);
         m_pTimer->set_handler(this);
-        m_pTimer->start(1);
+        m_pTimer->start(100);
 
         m_pBuf = new char[1300];
         memset(m_pBuf, 0, 1300);

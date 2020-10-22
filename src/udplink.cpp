@@ -127,12 +127,12 @@ int UdpLink::send(const char* data, size_t len, uint32_t ip, uint16_t port) {
     uv_buf_t buf = uv_buf_init(const_cast<char*>(mem->data()), len);
 
     //try send first
-    int sent_bytes = uv_udp_try_send(m_pUdp, &buf, 1, NULL);
+    int sent_bytes = uv_udp_try_send(m_pUdp, &buf, 1, (struct sockaddr*)&addr);
     if( sent_bytes <= 0 ) {
         FUNLOG(Info, "udp link try send failed, send again! bytes=%d", sent_bytes);
         uv_udp_send_t* send = (uv_udp_send_t*)malloc(sizeof(uv_udp_send_t));
         send->data = mem;
-        uv_udp_send(send, m_pUdp, &buf, 1, NULL, on_send);
+        uv_udp_send(send, m_pUdp, &buf, 1, (struct sockaddr*)&addr, on_send);
     } else {
         MemPool::Ins()->free(mem);
     }

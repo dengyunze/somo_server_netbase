@@ -53,6 +53,8 @@ int UdpServer::listen(uint16_t base_port)
     uv_ip4_addr("0.0.0.0", base_port, &addr);
     uv_udp_bind(m_pUdp, (const sockaddr*)&addr, UV_UDP_REUSEADDR);
     uv_udp_recv_start(m_pUdp, on_alloc, on_read);
+
+    return 0;
 }
 
 int UdpServer::close()
@@ -61,6 +63,8 @@ int UdpServer::close()
         uv_close((uv_handle_t*)m_pUdp, NULL);
         m_pUdp = NULL;
     }
+
+    return 0;
 }
 
 void UdpServer::answer(const char* data, int len, uint32_t ip, short port) {
@@ -153,7 +157,7 @@ void UdpServer::on_read(uv_udp_t* handle, ssize_t nread, const uv_buf_t* buf, co
         //server->answer(buf->base, nread, addr_in->sin_addr.s_addr, addr_in->sin_port);
     }
     
-    if( flags & UV_UDP_MMSG_CHUNK == UV_UDP_MMSG_CHUNK )  {
+    if( (flags & UV_UDP_MMSG_CHUNK) == UV_UDP_MMSG_CHUNK )  {
 
     } else {
         //if( buf != NULL && buf->base != NULL ) {
@@ -174,7 +178,7 @@ void    UdpServer::on_send(uv_udp_send_t* req, int status) {
 
 uint64_t    UdpServer::create_node(uint32_t ip, uint16_t port) {
     uint64_t node = ip;
-    node << 32;
+    node = node << 32;
     node += port;
 
     return node;
