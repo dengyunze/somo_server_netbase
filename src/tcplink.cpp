@@ -210,7 +210,14 @@ void TcpLink::removeData(int len) {
     m_nPos += len;
     m_nLen -= len;
 
-    if( m_nPos >= m_nLen ) {
+    //FUNLOG(Info, "tcp link remove data, linkid=%d, len=%d, m_nPos=%d, m_nLen=%d", m_nId, len, m_nPos, m_nLen);
+    if( m_nLen < 0 ) {
+        FUNLOG(Error, "tcp link remove data, m_nLen<0, linkid=%d, len=%d, m_nPos=%d, m_nLen=%d", m_nId, len, m_nPos, m_nLen);
+        m_nLen = 0;
+        m_nPos = 0;
+    } else if( m_nLen == 0 ) {
+        m_nPos = 0;
+    } else if( m_nPos >= m_nLen ) {
         //time to shrink:
         memcpy(m_pBuffer, m_pBuffer+m_nPos, m_nLen);
         m_nPos = 0;
